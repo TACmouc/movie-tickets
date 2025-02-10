@@ -1,5 +1,5 @@
 import Link from "next/link";
-import {FormEvent} from "react";
+import { FormEvent } from "react";
 
 interface LoginProps {
     email: string;
@@ -21,8 +21,7 @@ export default function Login({
                                   onSubmit,
                               }: LoginProps) {
     return (
-        <div
-            className="grid grid-rows-[1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+        <div className="grid grid-rows-[1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
             <header className="absolute top-4 left-4">
                 <Link
                     href="/"
@@ -63,12 +62,9 @@ export default function Login({
                 </form>
             </main>
             <nav className="flex gap-6 items-center justify-center">
-                <a
-                    className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-black dark:bg-white text-white dark:text-black gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-                    href="/register"
-                >
-                    Register
-                </a>
+                <p className="text-sm sm:text-base">
+                    Don&#39;t have an account? <Link href="/register" className="text-blue-500 hover:underline">Register</Link>
+                </p>
             </nav>
         </div>
     );

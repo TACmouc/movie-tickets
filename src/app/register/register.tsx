@@ -63,6 +63,11 @@ export default function Register({
                     </div>
                 </form>
             </main>
+            <nav className="flex gap-6 items-center justify-center">
+                <p className="text-sm sm:text-base">
+                    Back to <Link href="/login" className="text-blue-500 hover:underline">Login</Link>
+                </p>
+            </nav>
         </div>
     );
 }
