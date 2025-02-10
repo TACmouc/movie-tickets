@@ -1,71 +1,26 @@
-"use client";
+import Link from "next/link";
 
-import { useState, FormEvent } from "react";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
-import Signup from "./auth/signup";
-import Login from "./auth/login";
-
-export default function AuthPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isLogin, setIsLogin] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
-
-    try {
-      if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
-      } else {
-        await createUserWithEmailAndPassword(auth, email, password);
-      }
-      // Redirection après connexion réussie
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Erreur d'authentification");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <div className="container mx-auto p-4">
-      {isLogin ? (
-        <Login
-          email={email}
-          password={password}
-          error={error}
-          onEmailChange={setEmail}
-          onPasswordChange={setPassword}
-          onSubmit={handleSubmit}
-          isLoading={isLoading}
-        />
-      ) : (
-        <Signup
-          email={email}
-          password={password}
-          error={error}
-          onEmailChange={setEmail}
-          onPasswordChange={setPassword}
-          onSubmit={handleSubmit}
-          isLoading={isLoading}
-        />
-      )}
-
-      <div className="mt-4 text-center">
-        <button
-          onClick={() => setIsLogin(!isLogin)}
-          className="text-blue-500 hover:underline"
-        >
-          {isLogin
-            ? "Pas de compte ? Créer un compte"
-            : "Déjà un compte ? Se connecter"}
-        </button>
-      </div>
-    </div>
-  );
+export default function Home() {
+    return (
+        <div
+            className="grid grid-rows-[1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+            <main className="flex flex-col gap-8 items-center">
+                <h1 className="text-4xl font-bold">Movie Tickets</h1>
+            </main>
+            <nav className="flex gap-6 items-center justify-center">
+                <Link
+                    className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-black dark:bg-white text-white dark:text-black gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+                    href="/login"
+                >
+                    Login
+                </Link>
+                <Link
+                    className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+                    href="/register"
+                >
+                    Register
+                </Link>
+            </nav>
+        </div>
+    );
 }
