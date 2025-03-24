@@ -3,7 +3,7 @@
 import { useState, FormEvent } from "react";
 import Register from "@/app/register/register";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/firebase";
+import { auth } from "@/services/firebase";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
