@@ -6,9 +6,11 @@ interface LoginProps {
     password: string;
     error: string;
     isLoading: boolean;
+    resetMessage: string;
     onEmailChange: (email: string) => void;
     onPasswordChange: (password: string) => void;
     onSubmit: (e: FormEvent) => void;
+    onResetPassword: () => void;
 }
 
 export default function Login({
@@ -16,9 +18,11 @@ export default function Login({
     password,
     error,
     isLoading,
+    resetMessage,
     onEmailChange,
     onPasswordChange,
     onSubmit,
+    onResetPassword,
 }: LoginProps) {
     return (
         <div className="grid grid-rows-[1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -33,6 +37,7 @@ export default function Login({
             <main className="flex flex-col gap-8 items-center">
                 <h1 className="text-4xl font-bold">Login</h1>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
+                {resetMessage && <p className="text-green-500 mb-4">{resetMessage}</p>}
                 <form onSubmit={onSubmit} className="space-y-4 max-w-sm w-full">
                     <input
                         type="email"
@@ -60,6 +65,12 @@ export default function Login({
                         </button>
                     </div>
                 </form>
+                <button
+                    onClick={onResetPassword}
+                    className="text-blue-500 hover:underline mt-4"
+                >
+                    Forgot Password?
+                </button>
             </main>
             <nav className="flex gap-6 items-center justify-center">
                 <p className="text-sm sm:text-base">

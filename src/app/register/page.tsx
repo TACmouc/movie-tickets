@@ -3,13 +3,15 @@
 import { useState, FormEvent } from "react";
 import Register from "@/app/register/register";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import {auth} from "@/firebase";
+import { auth } from "@/firebase";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
 
     const handleEmailChange = (email: string) => {
         setEmail(email);
@@ -26,6 +28,7 @@ export default function RegisterPage() {
 
         try {
             await createUserWithEmailAndPassword(auth, email, password);
+            router.push("/additional-info");
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : "Authentication error");
         } finally {
