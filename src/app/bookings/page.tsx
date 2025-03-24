@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { auth, db } from "../../firebase";
+import { auth, db } from "../../services/firebase";
 import { useRouter } from "next/navigation";
 import { collection, query, where, getDocs, deleteDoc, doc, getDoc } from "firebase/firestore";
 import Navbar from "../../components/navbar";
@@ -69,21 +69,25 @@ export default function BookingsPage() {
 
             <main className="flex-grow flex justify-center bg-gray-100">
                 <div className="w-full p-8">
-                    <ul>
-                        {bookings.map(booking => (
-                            <li key={booking.id} className="mb-4">
-                                <div className="bg-white p-4 rounded shadow flex justify-between items-center">
-                                    <span className={"mr-4"}>{booking.movieName} - {booking.bookingTime}</span>
-                                    <button
-                                        onClick={() => handleDelete(booking.id)}
-                                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200"
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
+                    {bookings.length === 0 ? (
+                        <p className="text-center text-gray-600">No bookings found.</p>
+                    ) : (
+                        <ul>
+                            {bookings.map(booking => (
+                                <li key={booking.id} className="mb-4">
+                                    <div className="bg-white p-4 rounded shadow flex justify-between items-center">
+                                        <span className="mr-4">{booking.movieName} - {booking.bookingTime}</span>
+                                        <button
+                                            onClick={() => handleDelete(booking.id)}
+                                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
             </main>
         </div>
