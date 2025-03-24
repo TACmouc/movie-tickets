@@ -29,7 +29,7 @@ export default function LoginPage() {
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            router.push('/home');
+            router.push('/movies');
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : "Authentication error");
         } finally {
