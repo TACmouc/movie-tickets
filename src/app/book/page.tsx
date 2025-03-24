@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { collection, query, where, getDocs, doc, addDoc } from "firebase/firestore";
-import { db, auth } from "../../firebase";
+import { db, auth } from "../../services/firebase";
 import Navbar from "../../components/navbar";
 import PageTitle from "@/components/page-title";
 
