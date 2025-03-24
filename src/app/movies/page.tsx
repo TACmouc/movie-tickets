@@ -15,7 +15,7 @@ interface Movie {
     genre: string;
     duration_minutes: number;
     rating: number;
-    image: string; // Add image field
+    image: string;
 }
 
 export default function HomePage() {

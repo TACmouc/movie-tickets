@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar";
-import { auth, db } from "../../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { auth } from "../../services/firebase";
+import { getUserData } from "../../services/userService";
 
 interface UserData {
     uid: string;
@@ -20,9 +20,9 @@ export default function ProfilePage() {
     useEffect(() => {
         const fetchUserData = async () => {
             if (user) {
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                if (userDoc.exists()) {
-                    setUserData(userDoc.data() as UserData);
+                const data = await getUserData(user.uid);
+                if (data) {
+                    setUserData(data as UserData);
                 }
             }
         };

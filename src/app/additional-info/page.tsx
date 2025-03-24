@@ -1,8 +1,8 @@
 "use client";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { auth, db } from "@/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { auth } from "@/services/firebase";
+import { setUserData } from "@/services/userService";
 
 export default function AdditionalInfoPage() {
     const [birthdate, setBirthdate] = useState("");
@@ -19,8 +19,8 @@ export default function AdditionalInfoPage() {
 
         try {
             const user = auth.currentUser;
-            if (user) {
-                await setDoc(doc(db, "users", user.uid), {
+            if (user && user.email) {
+                await setUserData(user.uid, {
                     uid: user.uid,
                     email: user.email,
                     birthdate,
