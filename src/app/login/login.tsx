@@ -12,14 +12,14 @@ interface LoginProps {
 }
 
 export default function Login({
-                                  email,
-                                  password,
-                                  error,
-                                  isLoading,
-                                  onEmailChange,
-                                  onPasswordChange,
-                                  onSubmit,
-                              }: LoginProps) {
+    email,
+    password,
+    error,
+    isLoading,
+    onEmailChange,
+    onPasswordChange,
+    onSubmit,
+}: LoginProps) {
     return (
         <div className="grid grid-rows-[1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
             <header className="absolute top-4 left-4">
