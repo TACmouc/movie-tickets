@@ -4,12 +4,14 @@ import { useState, FormEvent } from "react";
 import { auth } from "../../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import Login from "@/app/login/login";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
 
     const handleEmailChange = (email: string) => {
         setEmail(email);
@@ -26,6 +28,7 @@ export default function LoginPage() {
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
+            router.push('/home');
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : "Authentication error");
         } finally {
