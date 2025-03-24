@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { auth } from "../firebase";
+import { auth } from "../services/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
@@ -22,7 +22,7 @@ export default function Navbar() {
             <div className="max-w-6xl mx-auto px-4">
                 <div className="flex justify-between items-center h-16">
                     <div className="flex space-x-4">
-                        <Link href="/home" className="text-gray-700 hover:text-blue-500">
+                        <Link href="/movies" className="text-gray-700 hover:text-blue-500">
                             Accueil
                         </Link>
                         <Link href="/booking" className="text-gray-700 hover:text-blue-500">
