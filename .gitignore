@@ -42,3 +42,4 @@ next-env.d.ts
 
 # firebase
 /src/firebase.js
+src/services/firebase.ts
