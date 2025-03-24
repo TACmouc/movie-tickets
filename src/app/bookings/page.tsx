@@ -10,7 +10,7 @@ export default function HomePage() {
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (!user) router.push('/');
+            if (!user) router.push('/bookings');
         });
 
         return () => unsubscribe();

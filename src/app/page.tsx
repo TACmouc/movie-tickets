@@ -15,7 +15,7 @@ export default function Home() {
       if (user) {
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
-          router.push('/movies');
+          router.push('/bookings');
         } else {
           router.push('/additional-info');
         }

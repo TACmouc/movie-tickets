@@ -27,7 +27,7 @@ export default function AdditionalInfoPage() {
                     location,
                     favoriteGenre,
                 });
-                router.push("/movies");
+                router.push("/");
             } else {
                 setError("User not authenticated");
             }
