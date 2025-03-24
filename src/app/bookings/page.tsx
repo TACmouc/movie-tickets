@@ -3,13 +3,22 @@
 import { useEffect, useState } from "react";
 import { auth, db } from "../../services/firebase";
 import { useRouter } from "next/navigation";
-import { collection, query, where, getDocs, deleteDoc, doc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, deleteDoc, doc, getDoc, DocumentReference, Timestamp } from "firebase/firestore";
 import Navbar from "../../components/navbar";
 
 interface Booking {
     id: string;
     movieName: string;
     bookingTime: string;
+}
+
+interface ShowtimeData {
+    movie_id: DocumentReference;
+    date: Timestamp;
+}
+
+interface MovieData {
+    name: string;
 }
 
 export default function BookingsPage() {
@@ -31,9 +40,9 @@ export default function BookingsPage() {
                     const bookingsList = await Promise.all(bookingsSnapshot.docs.map(async (doc) => {
                         const bookingData = doc.data();
                         const showtimeDoc = await getDoc(bookingData.showtime_id);
-                        const showtimeData = showtimeDoc.data();
+                        const showtimeData = showtimeDoc.data() as ShowtimeData;
                         const movieDoc = await getDoc(showtimeData.movie_id);
-                        const movieData = movieDoc.data();
+                        const movieData = movieDoc.data() as MovieData;
                         return {
                             id: doc.id,
                             movieName: movieData.name,
