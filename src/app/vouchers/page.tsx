@@ -15,7 +15,7 @@ interface Ticket {
     isUsed: boolean;
 }
 
-export default function BookingPage() {
+export default function VouchersPage() {
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [ticketNumber, setTicketNumber] = useState("");
     const [expirationDate, setExpirationDate] = useState("");
@@ -73,7 +73,7 @@ export default function BookingPage() {
 
             <main className="flex-grow flex flex-col items-center justify-center bg-gray-100 p-8">
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-gray-800 mb-4">Booking</h1>
+                    <h1 className="text-4xl font-bold text-gray-800 mb-4">Vouchers</h1>
                     <p className="text-gray-600">Voici tes places</p>
                 </div>
                 <button
@@ -108,7 +108,7 @@ export default function BookingPage() {
                                         <p><strong>Numéro de billet:</strong> {ticket.ticketNumber}</p>
                                         <p><strong>Date d&apos;expiration:</strong> {ticket.expirationDate}</p>
                                     </div>
-                                    <QRCode value={ticket.ticketNumber} size={64} />
+                                    <QRCodeSVG value={ticket.ticketNumber} size={64} />
                                 </div>
                             ))
                         ) : (
