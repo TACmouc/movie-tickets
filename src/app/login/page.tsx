@@ -6,6 +6,7 @@ import Login from "@/app/login/login";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+    document.title = "Login";
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");

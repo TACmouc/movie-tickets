@@ -5,6 +5,7 @@ import { auth } from "@/services/firebase";
 import { setUserData } from "@/services/userService";
 
 export default function AdditionalInfoPage() {
+    document.title = "Additional infos";
     const [birthdate, setBirthdate] = useState("");
     const [location, setLocation] = useState("");
     const [favoriteGenre, setFavoriteGenre] = useState("");
