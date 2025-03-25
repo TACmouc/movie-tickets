@@ -4,7 +4,7 @@ import { useEffect, useState, FormEvent, Fragment } from "react";
 import { auth } from "../../services/firebase";
 import { useRouter } from "next/navigation";
 import Navbar from "../../components/navbar";
-import { addTicket, getTickets } from "../../services/ticketService";
+import { addTicket, getTickets, updateTicket, deleteTicket } from "../../services/ticketService";
 import { Dialog, Transition, TransitionChild } from "@headlessui/react";
 import { QRCodeSVG } from "qrcode.react";
 import Image from "next/image";
@@ -101,6 +101,34 @@ export default function VouchersPage() {
         }
     };
 
+    const handleUpdateTicket = async (ticket: Ticket) => {
+        try {
+            await updateTicket(ticket.id, {
+                ticketNumber: ticket.ticketNumber,
+                expirationDate: ticket.expirationDate,
+                isUsed: ticket.isUsed,
+            });
+            fetchTickets(auth.currentUser?.uid!);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Error updating ticket");
+        }
+    };
+
+    const handleDeleteTicket = async () => {
+        if (selectedTicket) {
+            const confirmed = window.confirm("Are you sure you want to delete this ticket?");
+            if (confirmed) {
+                try {
+                    await deleteTicket(selectedTicket.id);
+                    setSelectedTicket(null);
+                    fetchTickets(auth.currentUser?.uid!);
+                } catch (err) {
+                    setError("Error deleting ticket");
+                }
+            }
+        }
+    };
+
     return (
         <div className="min-h-screen flex flex-col">
             <Navbar />
@@ -116,20 +144,32 @@ export default function VouchersPage() {
                 >
                     +
                 </button>
-                <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {tickets.map(ticket => (
-                        <div key={ticket.id} className="p-4 bg-white rounded shadow cursor-pointer" onClick={() => handleTicketClick(ticket)}>
-                            <Image src="/ticket-placeholder.png" alt="Ticket Image" width={150} height={150} className="mb-4" />
-                            <p><strong>Numéro de billet:</strong> {ticket.ticketNumber}</p>
-                            <p><strong>Date d&apos;expiration:</strong> {ticket.expirationDate}</p>
-                        </div>
-                    ))}
+                <div className="w-full max-w-6xl">
+                    <h2 className="text-2xl font-semibold mb-4">Tickets non utilisés</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                        {tickets.filter(ticket => !ticket.isUsed).map(ticket => (
+                            <div key={ticket.id} className="p-4 bg-white rounded shadow cursor-pointer flex flex-col items-center" onClick={() => handleTicketClick(ticket)}>
+                                <Image src="/ticket-placeholder.png" alt="Ticket Image" width={150} height={150} className="mb-4" />
+                                <p><strong>Numéro de billet:</strong> {ticket.ticketNumber}</p>
+                                <p><strong>Date d&apos;expiration:</strong> {ticket.expirationDate}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <h2 className="text-2xl font-semibold mb-4">Tickets utilisés</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {tickets.filter(ticket => ticket.isUsed).map(ticket => (
+                            <div key={ticket.id} className="p-4 bg-white rounded shadow cursor-pointer flex flex-col items-center" onClick={() => handleTicketClick(ticket)}>
+                                <Image src="/ticket-placeholder.png" alt="Ticket Image" width={150} height={150} className="mb-4" />
+                                <p><strong>Numéro de billet:</strong> {ticket.ticketNumber}</p>
+                                <p><strong>Date d&apos;expiration:</strong> {ticket.expirationDate}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </main>
 
             <Transition show={isOpen} as={Fragment}>
                 <Dialog as="div" className="fixed inset-0 z-10 flex items-center justify-center" onClose={() => setIsOpen(false)}>
-
                     <TransitionChild
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -206,15 +246,54 @@ export default function VouchersPage() {
                                         &times;
                                     </button>
                                 </div>
-                                <div className="space-y-4">
-                                    <p><strong>Numéro de billet:</strong> {selectedTicket.ticketNumber}</p>
-                                    <p><strong>Date d&apos;expiration:</strong> {selectedTicket.expirationDate}</p>
-                                    <div id="qrcode" className="flex justify-center">
+                                <form onSubmit={(e) => { e.preventDefault(); handleUpdateTicket(selectedTicket!); }} className="space-y-4">
+                                    <input
+                                        type="text"
+                                        placeholder="Numéro de billet"
+                                        value={selectedTicket.ticketNumber}
+                                        onChange={(e) => setSelectedTicket({ ...selectedTicket, ticketNumber: e.target.value })}
+                                        className="w-full p-2 border rounded"
+                                        disabled
+                                        required
+                                    />
+                                    <input
+                                        type="date"
+                                        placeholder="Date d&apos;expiration"
+                                        value={selectedTicket.expirationDate}
+                                        onChange={(e) => setSelectedTicket({ ...selectedTicket, expirationDate: e.target.value })}
+                                        className="w-full p-2 border rounded"
+                                        disabled
+                                        required
+                                    />
+                                    <div className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedTicket.isUsed}
+                                            onChange={(e) => {
+                                                const updatedTicket = { ...selectedTicket, isUsed: e.target.checked };
+                                                setSelectedTicket(updatedTicket);
+                                                handleUpdateTicket(updatedTicket);
+                                            }}
+                                            className="mr-2"
+                                        />
+                                        <label>Utilisé</label>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={handleDeleteTicket}
+                                        className="bg-red-500 text-white p-2 rounded hover:bg-red-600 w-full"
+                                    >
+                                        Supprimer
+                                    </button>
+                                    {error && <p className="text-red-500 mt-4">{error}</p>}
+                                </form>
+                                <div className="mt-4">
+                                    <div id="qrcode" className="flex justify-center p-4">
                                         <QRCodeSVG value={selectedTicket.ticketNumber} size={128} />
                                     </div>
                                     <button
                                         onClick={handleDownloadQRCode}
-                                        className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                                        className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 mt-4"
                                     >
                                         Télécharger le QR Code
                                     </button>

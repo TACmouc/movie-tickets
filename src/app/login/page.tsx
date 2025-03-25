@@ -1,4 +1,3 @@
-// src/app/login/page.tsx
 "use client"
 import { useState, FormEvent } from "react";
 import { auth } from "../../services/firebase";
