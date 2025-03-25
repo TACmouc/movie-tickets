@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "../services/firebase";
 import Navbar from "./navbar";
 import PageTitle from "./page-title";
 import Image from "next/image";
+import Link from "next/link";
 
 interface Movie {
     id: string;
@@ -64,7 +65,7 @@ export default function MovieComponent() {
             <PageTitle title={movie.name} />
 
             <main className="flex-grow flex justify-center bg-gray-100">
-                <div className="w-full max-w-4xl p-8 bg-white rounded-lg shadow">
+                <div className="w-full max-w-4xl m-8 p-8 bg-white h-fit rounded-lg shadow">
                     <div className="flex flex-col md:flex-row items-center">
                         <Image width={200} height={0} src={movie.image} alt={movie.name} className="rounded-sm object-fit mb-4 md:mb-0 md:mr-4" />
                         <div>
@@ -75,6 +76,11 @@ export default function MovieComponent() {
                             <p className="text-gray-600 mb-2">Release Date: {movie.release_date}</p>
                             <p className="text-gray-800">{movie.description}</p>
                         </div>
+                    </div>
+                    <div className="flex justify-center mt-8">
+                        <Link href={`/book?id=${movie.id}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200">
+                            Book Now
+                        </Link>
                     </div>
                 </div>
             </main>

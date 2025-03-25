@@ -25,8 +25,11 @@ export default function Navbar() {
                         <Link href="/movies" className="text-gray-700 hover:text-blue-500">
                             Accueil
                         </Link>
-                        <Link href="/booking" className="text-gray-700 hover:text-blue-500">
-                            Booking
+                        <Link href="/bookings" className="text-gray-700 hover:text-blue-500">
+                            Bookings
+                        </Link>
+                        <Link href="/vouchers" className="text-gray-700 hover:text-blue-500">
+                            Vouchers
                         </Link>
                         <Link href="/profile" className="text-gray-700 hover:text-blue-500">
                             Profil

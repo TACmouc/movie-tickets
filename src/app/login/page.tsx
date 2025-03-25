@@ -1,7 +1,6 @@
-// src/app/login/page.tsx
 "use client"
 import { useState, FormEvent } from "react";
-import { auth } from "../../firebase";
+import { auth } from "../../services/firebase";
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import Login from "@/app/login/login";
 import { useRouter } from "next/navigation";

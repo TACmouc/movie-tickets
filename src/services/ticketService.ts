@@ -1,4 +1,4 @@
-import { collection, addDoc, query, where, getDocs, orderBy } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
 interface TicketData {
@@ -26,4 +26,12 @@ export const getTickets = async (uid: string): Promise<TicketData[]> => {
         });
     });
     return tickets;
+};
+
+export const updateTicket = async (id: string, ticketData: Omit<TicketData, 'id'>): Promise<void> => {
+    await updateDoc(doc(db, "tickets", id), ticketData);
+};
+
+export const deleteTicket = async (id: string): Promise<void> => {
+    await deleteDoc(doc(db, "tickets", id));
 };
