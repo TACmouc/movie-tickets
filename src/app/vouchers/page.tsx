@@ -5,8 +5,9 @@ import { auth } from "../../services/firebase";
 import { useRouter } from "next/navigation";
 import Navbar from "../../components/navbar";
 import { addTicket, getTickets } from "../../services/ticketService";
-import { Dialog, Transition } from "@headlessui/react";
+import { Dialog, Transition, TransitionChild } from "@headlessui/react";
 import { QRCodeSVG } from "qrcode.react";
+import Image from "next/image";
 
 interface Ticket {
     id: string;
@@ -17,6 +18,7 @@ interface Ticket {
 
 export default function VouchersPage() {
     const [tickets, setTickets] = useState<Ticket[]>([]);
+    const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
     const [ticketNumber, setTicketNumber] = useState("");
     const [expirationDate, setExpirationDate] = useState("");
     const [isUsed, setIsUsed] = useState(false);
@@ -35,14 +37,25 @@ export default function VouchersPage() {
     }, [router]);
 
     const fetchTickets = async (uid: string) => {
-        const fetchedTickets = await getTickets(uid);
-        setTickets(fetchedTickets);
+        try {
+            const fetchedTickets = await getTickets(uid);
+            setTickets(fetchedTickets);
+        } catch (err) {
+            setError("Error fetching tickets");
+        }
     };
 
     const handleAddTicket = async (e: FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
+
+        const ticketNumberRegex = /^O\d{14}$/;
+        if (!ticketNumberRegex.test(ticketNumber)) {
+            setError("Le numéro de billet doit commencer par la lettre 'O' suivie de 14 chiffres.");
+            setIsLoading(false);
+            return;
+        }
 
         try {
             const user = auth.currentUser;
@@ -67,6 +80,27 @@ export default function VouchersPage() {
         }
     };
 
+    const handleTicketNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTicketNumber(e.target.value.replace(/\s+/g, ""));
+    };
+
+    const handleTicketClick = (ticket: Ticket) => {
+        setSelectedTicket(ticket);
+    };
+
+    const handleDownloadQRCode = () => {
+        if (selectedTicket) {
+            const svg = document.getElementById("qrcode")?.outerHTML;
+            const blob = new Blob([svg!], { type: "image/svg+xml" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${selectedTicket.ticketNumber}.svg`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    };
+
     return (
         <div className="min-h-screen flex flex-col">
             <Navbar />
@@ -82,45 +116,20 @@ export default function VouchersPage() {
                 >
                     +
                 </button>
-                <div className="w-full max-w-4xl">
-                    <div className="mb-8">
-                        <h2 className="text-2xl font-semibold mb-4">Tickets non utilisés</h2>
-                        {tickets.filter(ticket => !ticket.isUsed).length > 0 ? (
-                            tickets.filter(ticket => !ticket.isUsed).map(ticket => (
-                                <div key={ticket.id} className="p-4 mb-4 bg-white rounded shadow flex items-center">
-                                    <div className="mr-4">
-                                        <p><strong>Numéro de billet:</strong> {ticket.ticketNumber}</p>
-                                        <p><strong>Date d&apos;expiration:</strong> {ticket.expirationDate}</p>
-                                    </div>
-                                    <QRCodeSVG value={ticket.ticketNumber} size={64} />
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-gray-500">Aucun ticket non utilisé</p>
-                        )}
-                    </div>
-                    <div>
-                        <h2 className="text-2xl font-semibold mb-4">Tickets utilisés</h2>
-                        {tickets.filter(ticket => ticket.isUsed).length > 0 ? (
-                            tickets.filter(ticket => ticket.isUsed).map(ticket => (
-                                <div key={ticket.id} className="p-4 mb-4 bg-white rounded shadow flex items-center">
-                                    <div className="mr-4">
-                                        <p><strong>Numéro de billet:</strong> {ticket.ticketNumber}</p>
-                                        <p><strong>Date d&apos;expiration:</strong> {ticket.expirationDate}</p>
-                                    </div>
-                                    <QRCodeSVG value={ticket.ticketNumber} size={64} />
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-gray-500">Aucun ticket utilisé</p>
-                        )}
-                    </div>
+                <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {tickets.map(ticket => (
+                        <div key={ticket.id} className="p-4 bg-white rounded shadow cursor-pointer" onClick={() => handleTicketClick(ticket)}>
+                            <Image src="/ticket-placeholder.png" alt="Ticket Image" width={150} height={150} className="mb-4" />
+                            <p><strong>Numéro de billet:</strong> {ticket.ticketNumber}</p>
+                            <p><strong>Date d&apos;expiration:</strong> {ticket.expirationDate}</p>
+                        </div>
+                    ))}
                 </div>
             </main>
 
             <Transition show={isOpen} as={Fragment}>
                 <Dialog as="div" className="fixed inset-0 z-10 flex items-center justify-center" onClose={() => setIsOpen(false)}>
-                    <Transition.Child
+                    <TransitionChild
                         as={Fragment}
                         enter="ease-out duration-300"
                         enterFrom="opacity-0"
@@ -130,9 +139,9 @@ export default function VouchersPage() {
                         leaveTo="opacity-0"
                     >
                         <div className="fixed inset-0 bg-black opacity-30" />
-                    </Transition.Child>
+                    </TransitionChild>
 
-                    <Transition.Child
+                    <TransitionChild
                         as={Fragment}
                         enter="ease-out duration-300"
                         enterFrom="opacity-0 scale-95"
@@ -142,13 +151,18 @@ export default function VouchersPage() {
                         leaveTo="opacity-0 scale-95"
                     >
                         <div className="bg-white p-6 rounded shadow-md max-w-md w-full">
-                            <Dialog.Title className="text-xl font-semibold mb-4">Ajouter un billet</Dialog.Title>
+                            <div className="flex justify-between items-center mb-4">
+                                <Dialog.Title className="text-xl font-semibold">Ajouter un billet</Dialog.Title>
+                                <button onClick={() => setIsOpen(false)} className="text-gray-500 hover:text-gray-700">
+                                    &times;
+                                </button>
+                            </div>
                             <form onSubmit={handleAddTicket} className="space-y-4">
                                 <input
                                     type="text"
                                     placeholder="Numéro de billet"
                                     value={ticketNumber}
-                                    onChange={(e) => setTicketNumber(e.target.value)}
+                                    onChange={handleTicketNumberChange}
                                     className="w-full p-2 border rounded"
                                     required
                                 />
@@ -179,9 +193,48 @@ export default function VouchersPage() {
                                 {error && <p className="text-red-500 mt-4">{error}</p>}
                             </form>
                         </div>
-                    </Transition.Child>
+                    </TransitionChild>
                 </Dialog>
             </Transition>
+
+            {selectedTicket && (
+                <Transition show={!!selectedTicket} as={Fragment}>
+                    <Dialog as="div" className="fixed inset-0 z-10 flex items-center justify-center" onClose={() => setSelectedTicket(null)}>
+
+                        <TransitionChild
+                            as={Fragment}
+                            enter="ease-out duration-300"
+                            enterFrom="opacity-0 scale-95"
+                            enterTo="opacity-100 scale-100"
+                            leave="ease-in duration-200"
+                            leaveFrom="opacity-100 scale-100"
+                            leaveTo="opacity-0 scale-95"
+                        >
+                            <div className="bg-white p-6 rounded shadow-md max-w-md w-full">
+                                <div className="flex justify-between items-center mb-4">
+                                    <Dialog.Title className="text-xl font-semibold">Détails du billet</Dialog.Title>
+                                    <button onClick={() => setSelectedTicket(null)} className="text-gray-500 hover:text-gray-700">
+                                        &times;
+                                    </button>
+                                </div>
+                                <div className="space-y-4">
+                                    <p><strong>Numéro de billet:</strong> {selectedTicket.ticketNumber}</p>
+                                    <p><strong>Date d&apos;expiration:</strong> {selectedTicket.expirationDate}</p>
+                                    <div id="qrcode" className="flex justify-center">
+                                        <QRCodeSVG value={selectedTicket.ticketNumber} size={128} />
+                                    </div>
+                                    <button
+                                        onClick={handleDownloadQRCode}
+                                        className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                                    >
+                                        Télécharger le QR Code
+                                    </button>
+                                </div>
+                            </div>
+                        </TransitionChild>
+                    </Dialog>
+                </Transition>
+            )}
         </div>
     );
 }
