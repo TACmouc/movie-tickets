@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "../../components/navbar";
 import { addTicket, getTickets } from "../../services/ticketService";
 import { Dialog, Transition } from "@headlessui/react";
+import { QRCodeSVG } from "qrcode.react";
 
 interface Ticket {
     id: string;
@@ -86,9 +87,12 @@ export default function BookingPage() {
                         <h2 className="text-2xl font-semibold mb-4">Tickets non utilisés</h2>
                         {tickets.filter(ticket => !ticket.isUsed).length > 0 ? (
                             tickets.filter(ticket => !ticket.isUsed).map(ticket => (
-                                <div key={ticket.id} className="p-4 mb-4 bg-white rounded shadow">
-                                    <p><strong>Numéro de billet:</strong> {ticket.ticketNumber}</p>
-                                    <p><strong>Date d&apos;expiration:</strong> {ticket.expirationDate}</p>
+                                <div key={ticket.id} className="p-4 mb-4 bg-white rounded shadow flex items-center">
+                                    <div className="mr-4">
+                                        <p><strong>Numéro de billet:</strong> {ticket.ticketNumber}</p>
+                                        <p><strong>Date d&apos;expiration:</strong> {ticket.expirationDate}</p>
+                                    </div>
+                                    <QRCodeSVG value={ticket.ticketNumber} size={64} />
                                 </div>
                             ))
                         ) : (
@@ -99,9 +103,12 @@ export default function BookingPage() {
                         <h2 className="text-2xl font-semibold mb-4">Tickets utilisés</h2>
                         {tickets.filter(ticket => ticket.isUsed).length > 0 ? (
                             tickets.filter(ticket => ticket.isUsed).map(ticket => (
-                                <div key={ticket.id} className="p-4 mb-4 bg-white rounded shadow">
-                                    <p><strong>Numéro de billet:</strong> {ticket.ticketNumber}</p>
-                                    <p><strong>Date d&apos;expiration:</strong> {ticket.expirationDate}</p>
+                                <div key={ticket.id} className="p-4 mb-4 bg-white rounded shadow flex items-center">
+                                    <div className="mr-4">
+                                        <p><strong>Numéro de billet:</strong> {ticket.ticketNumber}</p>
+                                        <p><strong>Date d&apos;expiration:</strong> {ticket.expirationDate}</p>
+                                    </div>
+                                    <QRCode value={ticket.ticketNumber} size={64} />
                                 </div>
                             ))
                         ) : (
