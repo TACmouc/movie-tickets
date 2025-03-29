@@ -28,7 +28,7 @@ export default function MovieComponent() {
 
     useEffect(() => {
         if (!movieId) {
-            router.push('/');
+            router.replace('/');
             return;
         }
 

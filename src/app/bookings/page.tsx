@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {CSSProperties, useEffect, useState} from "react";
 import { auth, db } from "../../services/firebase";
 import { useRouter } from "next/navigation";
 import { collection, query, where, getDocs, deleteDoc, doc, getDoc, DocumentReference, Timestamp } from "firebase/firestore";
 import Navbar from "../../components/navbar";
+import PageTitle from "@/components/page-title";
+import {ClipLoader} from "react-spinners";
 
 interface Booking {
     id: string;
@@ -24,8 +26,10 @@ interface MovieData {
 export default function BookingsPage() {
     const router = useRouter();
     const [bookings, setBookings] = useState<Booking[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        document.title = "Bookings";
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (!user) {
                 router.push('/');
@@ -52,6 +56,8 @@ export default function BookingsPage() {
                     setBookings(bookingsList);
                 } catch (error) {
                     console.error("Error fetching bookings: ", error);
+                } finally {
+                    setLoading(false);
                 }
             };
 
@@ -72,13 +78,32 @@ export default function BookingsPage() {
         }
     };
 
+    const override: CSSProperties = {
+        display: "block",
+        margin: "0 auto",
+        borderColor: "red",
+    };
+
     return (
         <div className="min-h-screen flex flex-col">
             <Navbar />
+            <PageTitle title={"Bookings"} />
 
             <main className="flex-grow flex justify-center bg-gray-100">
                 <div className="w-full p-8">
-                    {bookings.length === 0 ? (
+                    {loading ? (
+                        <div>
+                            <p className="text-center text-gray-600">Loading bookings...</p>
+                            <ClipLoader
+                                color={"#000"}
+                                loading={loading}
+                                cssOverride={override}
+                                size={150}
+                                aria-label="Loading Spinner"
+                                data-testid="loader"
+                            />
+                        </div>
+                    ) : bookings.length === 0 ? (
                         <p className="text-center text-gray-600">No bookings found.</p>
                     ) : (
                         <ul>

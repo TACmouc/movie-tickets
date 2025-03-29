@@ -19,6 +19,7 @@ interface Movie {
 }
 
 export default function HomePage() {
+    document.title = "Movies";
     const router = useRouter();
     const [movies, setMovies] = useState<Movie[]>([]);
 

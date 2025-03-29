@@ -7,6 +7,7 @@ import { auth } from "@/services/firebase";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
+    document.title = "Register";
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");

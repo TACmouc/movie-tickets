@@ -8,6 +8,7 @@ import { addTicket, getTickets, updateTicket, deleteTicket } from "../../service
 import { Dialog, Transition, TransitionChild } from "@headlessui/react";
 import { QRCodeSVG } from "qrcode.react";
 import Image from "next/image";
+import PageTitle from "@/components/page-title";
 
 interface Ticket {
     id: string;
@@ -17,6 +18,7 @@ interface Ticket {
 }
 
 export default function VouchersPage() {
+    document.title = "Vouchers";
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
     const [ticketNumber, setTicketNumber] = useState("");
@@ -40,7 +42,7 @@ export default function VouchersPage() {
         try {
             const fetchedTickets = await getTickets(uid);
             setTickets(fetchedTickets);
-        } catch (err) {
+        } catch {
             setError("Error fetching tickets");
         }
     };
@@ -108,7 +110,12 @@ export default function VouchersPage() {
                 expirationDate: ticket.expirationDate,
                 isUsed: ticket.isUsed,
             });
-            fetchTickets(auth.currentUser?.uid!);
+            const userId = auth.currentUser?.uid;
+            if (userId) {
+                await fetchTickets(userId);
+            } else {
+                console.error("User ID is undefined");
+            }
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : "Error updating ticket");
         }
@@ -121,8 +128,13 @@ export default function VouchersPage() {
                 try {
                     await deleteTicket(selectedTicket.id);
                     setSelectedTicket(null);
-                    fetchTickets(auth.currentUser?.uid!);
-                } catch (err) {
+                    const userId = auth.currentUser?.uid;
+                    if (userId) {
+                        await fetchTickets(userId);
+                    } else {
+                        console.error("User ID is undefined");
+                    }
+                } catch {
                     setError("Error deleting ticket");
                 }
             }
@@ -132,17 +144,14 @@ export default function VouchersPage() {
     return (
         <div className="min-h-screen flex flex-col">
             <Navbar />
+            <PageTitle title={"Vouchers"} />
 
             <main className="flex-grow flex flex-col items-center justify-center bg-gray-100 p-8">
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-gray-800 mb-4">Vouchers</h1>
-                    <p className="text-gray-600">Voici tes places</p>
-                </div>
                 <button
                     onClick={() => setIsOpen(true)}
-                    className="mb-8 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600"
+                    className="mb-8 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 px-4"
                 >
-                    +
+                    + Add a voucher
                 </button>
                 <div className="w-full max-w-6xl">
                     <h2 className="text-2xl font-semibold mb-4">Tickets non utilisés</h2>
@@ -204,13 +213,15 @@ export default function VouchersPage() {
                                     required
                                 />
                                 <div className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        checked={isUsed}
-                                        onChange={(e) => setIsUsed(e.target.checked)}
-                                        className="mr-2"
-                                    />
-                                    <label>Utilisé</label>
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            checked={isUsed}
+                                            onChange={(e) => setIsUsed(e.target.checked)}
+                                            className="mr-2"
+                                        />
+                                        Utilisé
+                                        </label>
                                 </div>
                                 <button
                                     type="submit"
@@ -266,7 +277,7 @@ export default function VouchersPage() {
                                         required
                                     />
                                     <div className="flex items-center">
-                                        <input
+                                        <label><input
                                             type="checkbox"
                                             checked={selectedTicket.isUsed}
                                             onChange={(e) => {
@@ -276,7 +287,7 @@ export default function VouchersPage() {
                                             }}
                                             className="mr-2"
                                         />
-                                        <label>Utilisé</label>
+                                        Utilisé</label>
                                     </div>
                                     <button
                                         type="button"

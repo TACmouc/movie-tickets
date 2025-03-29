@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar";
 import { auth } from "../../services/firebase";
 import { getUserData } from "../../services/userService";
+import PageTitle from "@/components/page-title";
 
 interface UserData {
     uid: string;
@@ -18,6 +19,7 @@ export default function ProfilePage() {
     const user = auth.currentUser;
 
     useEffect(() => {
+        document.title = "Profile";
         const fetchUserData = async () => {
             if (user) {
                 const data = await getUserData(user.uid);
@@ -32,6 +34,7 @@ export default function ProfilePage() {
     return (
         <div className="min-h-screen flex flex-col">
             <Navbar />
+            <PageTitle title={"Profil"} />
 
             <main className="flex-grow bg-gray-100 p-8">
                 <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
